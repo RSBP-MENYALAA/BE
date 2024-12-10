@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'team-1-genics-2024-be',               
+      name: 'fp-pbkk',               
       script: 'node dist/index.js',        
       instances: '1',          
       env: {
