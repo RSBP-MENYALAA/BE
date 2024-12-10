@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  flask-api:
+    build:
+      context: ./ML
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000" 
+    volumes:
+      - ./ML/model:/app/model 
+      - ./ML/image:/app/image 
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
