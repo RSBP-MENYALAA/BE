@@ -34,6 +34,7 @@ def predict():
         # Prediksi
         predictions = model.predict(img_array)
         predicted_class = np.argmax(predictions, axis=1)
+        confidence = np.max(predictions)
 
         # Hapus gambar setelah diproses
         os.remove(image_path)
@@ -45,7 +46,7 @@ def predict():
         return jsonify({
             'predicted_class': int(predicted_class[0]),
             'label': label,
-            'probabilities': predictions.tolist()
+            'confidence': confidence
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
