@@ -2,8 +2,8 @@ import "./config/env";
 import express from "express";
 import cors from "cors";
 import { predictRouter } from "./router/PredictRouter";
-import { authRouter } from "./router/authRouter";
-import { userRouter } from "./router/userRouter";
+import { authRouter } from "./router/AuthRouter";
+import { userRouter } from "./router/UserRouter";
 
 const app = express();
 
