@@ -4,6 +4,8 @@ import cors from "cors";
 import { predictRouter } from "./router/PredictRouter";
 import { retrainRouter } from "./router/RetrainRoute";
 import "./config/cron"
+import { authRouter } from "./router/AuthRouter";
+import { userRouter } from "./router/UserRouter";
 
 const app = express();
 
@@ -22,6 +24,8 @@ app.use(express.json());
 
 app.use("/api", predictRouter);
 app.use("/api", retrainRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/users", userRouter);
 
 const port = Number(process.env.PORT_SERVER) || 5000;
 

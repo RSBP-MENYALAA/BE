@@ -11,4 +11,5 @@ export interface Prediction {
   label: string;
   probabilities: number[];
   imagePath: string;
+  confidence: number;
 }

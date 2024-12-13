@@ -35,6 +35,7 @@ export class PredictService {
     });
 
     if (response.status !== StatusCodes.OK) {
+      console.log(response);
       throw new ResponseError(StatusCodes.INTERNAL_SERVER_ERROR, "Internal Server Error");
     }
     
