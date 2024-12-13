@@ -2,6 +2,8 @@ import "./config/env";
 import express from "express";
 import cors from "cors";
 import { predictRouter } from "./router/PredictRouter";
+import { authRouter } from "./router/authRouter";
+import { userRouter } from "./router/userRouter";
 
 const app = express();
 
@@ -19,6 +21,8 @@ app.use(
 app.use(express.json());
 
 app.use("/api", predictRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/users", userRouter);
 
 const port = Number(process.env.PORT_SERVER) || 5000;
 

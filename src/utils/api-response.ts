@@ -1,3 +1,4 @@
+import { ZodError } from 'zod'; 
 import { ResponseError } from '../error/ResponseError';
 import { Response } from 'express'; 
 import { StatusCodes } from 'http-status-codes';
@@ -22,6 +23,11 @@ export const errorResponse = (res: Response, error: Error): void => {
     res.status(error.status).json({
       errorCode: error.status,
       errorMessage: error.message,
+    });
+  } else if (error instanceof ZodError) {
+    res.status(StatusCodes.BAD_REQUEST).json({
+      errorCode: StatusCodes.BAD_REQUEST,
+      errorMessage: error.errors[0].message,
     });
   } else {
     console.log(error);
