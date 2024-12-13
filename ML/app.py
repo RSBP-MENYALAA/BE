@@ -34,7 +34,8 @@ def predict():
         # Prediksi
         predictions = model.predict(img_array)
         predicted_class = np.argmax(predictions, axis=1)
-        confidence = np.max(predictions)
+        confidence = round(float(np.max(predictions)), 2)  # Ubah ke dua angka di belakang koma
+
 
         # Hapus gambar setelah diproses
         os.remove(image_path)
