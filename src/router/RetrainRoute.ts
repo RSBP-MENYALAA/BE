@@ -1,7 +1,7 @@
 import { Router } from "express"
-import { uploadMiddleware } from "../middleware/UploadMiddleware"
+import { AuthMiddleware } from "../middleware/AuthMiddleware"
 import { RetrainController } from "../controller/RetrainController"
 
 export const retrainRouter = Router()
 
-retrainRouter.post("/retrain", RetrainController.retrain)
+retrainRouter.post("/retrain", AuthMiddleware, RetrainController.retrain)
