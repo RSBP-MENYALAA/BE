@@ -46,6 +46,11 @@ export class RetrainService {
         }
 
         const jsondata = JSON.parse(fs.readFileSync(jsonretraindatapath).toString())
+
+        if (jsondata.length === 0) {
+            console.log("No data to retrain...")
+            return
+        }
         
         const url = process.env.ML_URL as string;
         const mlHealthCheck = await axios.get(`${url}/health`)
