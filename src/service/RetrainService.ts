@@ -27,7 +27,7 @@ export class RetrainService {
         }
 
         retraindata.push(data)
- 
+
         fs.writeFileSync(tempStorage, JSON.stringify(retraindata, null, 2))
 
         const res : RetrainResponse = {
