@@ -24,4 +24,22 @@ export class PredictController {
       }
     }
   }
+
+  static async predictTuned(req: Request, res: Response): Promise<void> {
+    try {
+      const data: UploadRequest = {
+        file: req.file as Express.Multer.File,
+      };
+
+      const predictReq = await UploadService.handleFileUpload(data);
+      const result = await PredictService.predictTuned(predictReq);
+      successResponse(res, StatusCodes.OK, "Predict successful", result);
+    } catch (error) {  
+      if (error instanceof ResponseError) {
+        errorResponse(res, error);
+      } else {
+        errorResponse(res, new ResponseError(StatusCodes.INTERNAL_SERVER_ERROR, "Internal Server Error"));
+      }
+    }
+  }
 }

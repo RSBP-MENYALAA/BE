@@ -10,7 +10,9 @@ app = Flask(__name__)
 
 # Load model
 MODEL_PATH = "model/CNN_art_classifier.h5"
+TUNED_MODEL_PATH = "model/CNN_art_classifier_tuned.h5"
 model = load_model(MODEL_PATH)
+tunedModel = load_model(TUNED_MODEL_PATH)
 
 # Endpoint untuk prediksi
 @app.route('/predict', methods=['POST'])
@@ -55,6 +57,47 @@ def predict():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/predict-tuned', methods=['POST'])
+def predict_tuned():
+    try:
+        # Periksa apakah ada file gambar di request
+        if 'image' not in request.files:
+            return jsonify({'error': 'No image uploaded'}), 400
+
+        file = request.files['image']
+
+        # Simpan gambar sementara di folder 'image'
+        image_path = os.path.join('image', file.filename)
+        file.save(image_path)
+
+        # Proses gambar
+        img = load_img(image_path, target_size=(32, 32))  # Pastikan ukuran sesuai dengan model Anda
+        img_array = img_to_array(img)
+        img_array = img_array / 255.0  # Normalisasi (jika diperlukan)
+        img_array = np.expand_dims(img_array, axis=0)  # Tambahkan batch dimension
+
+        # Prediksi
+        predictions = tunedModel.predict(img_array)
+        predicted_class = np.argmax(predictions, axis=1)
+        confidence = round(float(np.max(predictions)), 2)  # Ubah ke dua angka di belakang koma
+
+        # Hapus gambar setelah diproses
+        # os.remove(image_path)
+
+        # Mapping hasil prediksi ke label
+        label = "AI Generated" if predicted_class[0] == 0 else "Human-made"
+        
+        # Return hasil prediksi
+        return jsonify({
+            'predicted_class': int(predicted_class[0]),
+            'label': label,
+            'probabilities': predictions.tolist(),
+            'confidence': confidence,
+            'imagePath': image_path,
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 def retrain_model(retrain_data):
     images = []
     labels = []
@@ -63,7 +106,10 @@ def retrain_model(retrain_data):
         image_path = data['imagepath']
         new_class = data['new_class']
         
-        # Load gambar dan ubah ukuran sesuai model input
+        if not os.path.exists(image_path):  
+            continue
+
+        # Load gambar dan ubah ukuran sesuai model input  
         img = load_img(image_path, target_size=(32, 32))  # Sesuaikan dengan ukuran input model
         img_array = img_to_array(img)
         img_array = img_array / 255.0  # Normalisasi (jika diperlukan)
@@ -77,13 +123,20 @@ def retrain_model(retrain_data):
     y_train = np.array(labels)
     
     # Compile ulang model sebelum retraining
-    model.compile(optimizer=Adam(), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    tunedModel.compile(optimizer=Adam(), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
     # Melatih model dengan data baru
-    model.fit(X_train, y_train, epochs=5, batch_size=32)
+    tunedModel.fit(X_train, y_train, epochs=5, batch_size=32)
 
     # Simpan model yang sudah dilatih ulang
-    model.save(MODEL_PATH)
+    tunedModel.save(TUNED_MODEL_PATH)
+
+    # clear all on iamge folder
+    files = os.listdir('image')
+
+    if len(files) > 0:
+        for file in files:
+            os.remove(os.path.join('image', file))
 
     print("Retraining completed.")
 
